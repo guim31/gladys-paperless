@@ -1,0 +1,41 @@
+{
+  "request": "/api/documents/?tags__id__in=1&ordering=-added&page_size=8&fields=id,title,correspondent,document_type,tags,created,added",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "count": 3,
+    "next": null,
+    "previous": null,
+    "results": [
+      {
+        "id": 3,
+        "correspondent": null,
+        "document_type": null,
+        "title": "doc2",
+        "tags": [1, 3],
+        "created": "2026-10-14",
+        "added": "2026-10-14T19:24:10.718444Z"
+      },
+      {
+        "id": 2,
+        "correspondent": 2,
+        "document_type": 2,
+        "title": "Relevé septembre",
+        "tags": [1],
+        "created": "2026-10-14",
+        "added": "2026-10-14T19:24:00.035102Z"
+      },
+      {
+        "id": 1,
+        "correspondent": 1,
+        "document_type": 1,
+        "title": "Facture EDF octobre 2026",
+        "tags": [1, 2],
+        "created": "2026-10-14",
+        "added": "2026-10-14T19:23:51.931374Z"
+      }
+    ]
+  }
+}

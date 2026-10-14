@@ -1,0 +1,11 @@
+{
+  "request": "/api/remote_version/",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "version": "0.0.0",
+    "update_available": false
+  }
+}

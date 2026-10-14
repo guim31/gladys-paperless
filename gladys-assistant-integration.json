@@ -1,177 +1,611 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Paperless-ngx",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Your Paperless-ngx documents in Gladys: inbox, new scans, failures, and scenes on each new document.",
+    "fr": "Vos documents Paperless-ngx dans Gladys : boîte de réception, nouveaux scans, échecs et scènes.",
+    "de": "Deine Paperless-ngx-Dokumente in Gladys: Posteingang, neue Scans, Fehler und Szenen.",
+    "es": "Sus documentos de Paperless-ngx en Gladys: bandeja de entrada, nuevos escaneos, errores y escenas."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-paperless:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-paperless/main/cover.png",
+  "categories": ["services"],
+  "transports": ["local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Your Paperless-ngx",
+        "fr": "Votre Paperless-ngx",
+        "de": "Dein Paperless-ngx",
+        "es": "Su Paperless-ngx"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "In Paperless-ngx, open My Profile (top right) and create or copy the API Auth Token, then paste it below with the address of Paperless-ngx. The integration only reads: it never changes a document. An administrator's token also shows the free storage.",
+        "fr": "Dans Paperless-ngx, ouvrez Mon profil (en haut à droite) et créez ou copiez le jeton d'authentification d'API, puis collez-le ci-dessous avec l'adresse de Paperless-ngx. L'intégration ne fait que lire : elle ne modifie jamais un document. Le jeton d'un administrateur donne aussi le stockage libre.",
+        "de": "Öffne in Paperless-ngx Mein Profil (oben rechts), erstelle oder kopiere das API-Authentifizierungstoken und füge es unten mit der Adresse von Paperless-ngx ein. Die Integration liest nur und ändert nie ein Dokument. Das Token eines Administrators zeigt auch den freien Speicher.",
+        "es": "En Paperless-ngx, abra Mi Perfil (arriba a la derecha) y cree o copie el token de autenticación de la API; después péguelo abajo con la dirección de Paperless-ngx. La integración solo lee: nunca modifica un documento. El token de un administrador muestra también el almacenamiento libre."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-paperless/blob/main/docs/en.md",
+          "label": {
+            "en": "Setup guide",
+            "fr": "Guide d'installation",
+            "de": "Installationsanleitung",
+            "es": "Guía de instalación"
+          }
+        },
+        {
+          "url": "https://docs.paperless-ngx.com/api/#authorization",
+          "label": {
+            "en": "Paperless-ngx API tokens",
+            "fr": "Jetons d'API de Paperless-ngx",
+            "de": "API-Tokens von Paperless-ngx",
+            "es": "Tokens de API de Paperless-ngx"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "url",
+      "type": "string",
+      "label": {
+        "en": "Paperless-ngx address",
+        "fr": "Adresse de Paperless-ngx",
+        "de": "Adresse von Paperless-ngx",
+        "es": "Dirección de Paperless-ngx"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "The address you open Paperless-ngx with, port included (8000 by default).",
+        "fr": "L'adresse avec laquelle vous ouvrez Paperless-ngx, port compris (8000 par défaut).",
+        "de": "Die Adresse, mit der du Paperless-ngx öffnest, mit Port (standardmäßig 8000).",
+        "es": "La dirección con la que abre Paperless-ngx, puerto incluido (8000 por defecto)."
+      },
+      "placeholder": {
+        "en": "e.g. http://192.168.1.2:8000",
+        "fr": "ex. http://192.168.1.2:8000",
+        "de": "z. B. http://192.168.1.2:8000",
+        "es": "p. ej. http://192.168.1.2:8000"
+      },
+      "required": false
     },
     {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "key": "token",
+      "type": "secret",
+      "label": {
+        "en": "API token",
+        "fr": "Jeton d'API",
+        "de": "API-Token",
+        "es": "Token de API"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "description": {
+        "en": "My Profile → API Auth Token. The documents shown are those this user may see.",
+        "fr": "Mon profil → Jeton d'authentification d'API. Les documents vus sont ceux de cet utilisateur.",
+        "de": "Mein Profil → API-Authentifizierungstoken. Sichtbar sind die Dokumente dieses Benutzers.",
+        "es": "Mi Perfil → Token de autenticación de la API. Se ven los documentos de este usuario."
+      },
+      "required": false
     },
     {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "key": "allow_self_signed",
+      "type": "boolean",
+      "label": {
+        "en": "Accept self-signed certificates",
+        "fr": "Accepter les certificats auto-signés",
+        "de": "Selbstsignierte Zertifikate akzeptieren",
+        "es": "Aceptar certificados autofirmados"
+      },
+      "description": {
+        "en": "For an https:// address served with your own certificate. Tick only for your own server.",
+        "fr": "Pour une adresse en https:// servie avec votre propre certificat. À cocher pour votre propre serveur seulement.",
+        "de": "Für eine https://-Adresse mit deinem eigenen Zertifikat. Nur für deinen eigenen Server aktivieren.",
+        "es": "Para una dirección https:// servida con su propio certificado. Márquelo solo para su propio servidor."
+      },
       "required": false,
-      "default": "celsius",
+      "default": false
+    },
+    {
+      "key": "poll_interval",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Fréquence de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "How often Paperless-ngx is read: about five light requests each time.",
+        "fr": "Fréquence de lecture de Paperless-ngx : environ cinq requêtes légères à chaque fois.",
+        "de": "Wie oft Paperless-ngx gelesen wird: jedes Mal etwa fünf leichte Anfragen.",
+        "es": "Con qué frecuencia se lee Paperless-ngx: unas cinco peticiones ligeras cada vez."
+      },
+      "required": false,
+      "default": "60",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "30",
+          "label": {
+            "en": "30 seconds",
+            "fr": "30 secondes",
+            "de": "30 Sekunden",
+            "es": "30 segundos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "1 minute",
+            "fr": "1 minute",
+            "de": "1 Minute",
+            "es": "1 minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "2 minutes",
+            "fr": "2 minutes",
+            "de": "2 Minuten",
+            "es": "2 minutos"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "5 minutes",
+            "fr": "5 minutes",
+            "de": "5 Minuten",
+            "es": "5 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "check_updates",
+      "type": "boolean",
+      "label": {
+        "en": "Check for Paperless-ngx updates",
+        "fr": "Vérifier les mises à jour de Paperless-ngx",
+        "de": "Nach Updates von Paperless-ngx suchen",
+        "es": "Buscar actualizaciones de Paperless-ngx"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Every 6 hours, Paperless-ngx asks GitHub for its latest release. Untick to never ask.",
+        "fr": "Toutes les 6 heures, Paperless-ngx demande sa dernière version à GitHub. Décochez pour ne jamais le demander.",
+        "de": "Alle 6 Stunden fragt Paperless-ngx GitHub nach seiner neuesten Version. Deaktiviere es, um nie zu fragen.",
+        "es": "Cada 6 horas, Paperless-ngx pregunta a GitHub por su última versión. Desmárquelo para no preguntar nunca."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": true
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the feature names",
+        "fr": "Langue des noms de fonctionnalités",
+        "de": "Sprache der Funktionsnamen",
+        "es": "Idioma de los nombres de las funciones"
+      },
+      "description": {
+        "en": "Gladys keeps the names given when the device is added.",
+        "fr": "Gladys garde les noms donnés à l'ajout de l'appareil.",
+        "de": "Gladys behält die Namen, die beim Hinzufügen des Geräts vergeben wurden.",
+        "es": "Gladys conserva los nombres dados al añadir el dispositivo."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "document_added",
+      "label": {
+        "en": "New document in Paperless-ngx",
+        "fr": "Nouveau document dans Paperless-ngx",
+        "de": "Neues Dokument in Paperless-ngx",
+        "es": "Nuevo documento en Paperless-ngx"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A document was added (scan, email, upload), with its correspondent and type.",
+        "fr": "Un document a été ajouté (scan, e-mail, envoi), avec son correspondant et son type.",
+        "de": "Ein Dokument wurde hinzugefügt (Scan, E-Mail, Upload), mit Korrespondent und Typ.",
+        "es": "Se ha añadido un documento (escaneo, correo, subida), con su interlocutor y su tipo."
       },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "key": "correspondent",
+          "type": "string",
+          "label": {
+            "en": "Correspondent",
+            "fr": "Correspondant",
+            "de": "Korrespondent",
+            "es": "Interlocutor"
+          },
+          "description": {
+            "en": "Exactly as in Paperless-ngx, capitals included. Empty: any.",
+            "fr": "Exactement comme dans Paperless-ngx, majuscules comprises. Vide : tous.",
+            "de": "Genau wie in Paperless-ngx, mit Großbuchstaben. Leer: alle.",
+            "es": "Exactamente como en Paperless-ngx, mayúsculas incluidas. Vacío: todos."
+          },
+          "placeholder": {
+            "en": "e.g. EDF",
+            "fr": "ex. EDF",
+            "de": "z. B. Stadtwerke",
+            "es": "p. ej. Iberdrola"
+          }
         },
         {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "key": "document_type",
+          "type": "string",
+          "label": {
+            "en": "Document type",
+            "fr": "Type de document",
+            "de": "Dokumenttyp",
+            "es": "Tipo de documento"
+          },
+          "description": {
+            "en": "Exactly as in Paperless-ngx, capitals included. Empty: any.",
+            "fr": "Exactement comme dans Paperless-ngx, majuscules comprises. Vide : tous.",
+            "de": "Genau wie in Paperless-ngx, mit Großbuchstaben. Leer: alle.",
+            "es": "Exactamente como en Paperless-ngx, mayúsculas incluidas. Vacío: todos."
+          },
+          "placeholder": {
+            "en": "e.g. Invoice",
+            "fr": "ex. Facture",
+            "de": "z. B. Rechnung",
+            "es": "p. ej. Factura"
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "title",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Title",
+            "fr": "Titre",
+            "de": "Titel",
+            "es": "Título"
+          }
+        },
+        {
+          "key": "correspondent",
+          "type": "string",
+          "label": {
+            "en": "Correspondent",
+            "fr": "Correspondant",
+            "de": "Korrespondent",
+            "es": "Interlocutor"
+          }
+        },
+        {
+          "key": "document_type",
+          "type": "string",
+          "label": {
+            "en": "Document type",
+            "fr": "Type de document",
+            "de": "Dokumenttyp",
+            "es": "Tipo de documento"
+          }
+        },
+        {
+          "key": "tags",
+          "type": "string",
+          "label": {
+            "en": "Tags",
+            "fr": "Étiquettes",
+            "de": "Tags",
+            "es": "Etiquetas"
+          }
+        },
+        {
+          "key": "document_id",
+          "type": "number",
+          "label": {
+            "en": "Document number",
+            "fr": "Numéro du document",
+            "de": "Dokumentnummer",
+            "es": "Número del documento"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Link to the document",
+            "fr": "Lien vers le document",
+            "de": "Link zum Dokument",
+            "es": "Enlace al documento"
+          }
         }
       ]
-    }
-  ],
-  "scene_actions": [
+    },
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "document_tagged",
+      "label": {
+        "en": "New document with a tag",
+        "fr": "Nouveau document avec une étiquette",
+        "de": "Neues Dokument mit einem Tag",
+        "es": "Nuevo documento con una etiqueta"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "A document was added with this tag (Urgent, To pay…): one event per tag.",
+        "fr": "Un document a été ajouté avec cette étiquette (Urgent, À payer…) : un événement par étiquette.",
+        "de": "Ein Dokument wurde mit diesem Tag hinzugefügt (Dringend, Zu zahlen…): ein Ereignis pro Tag.",
+        "es": "Se ha añadido un documento con esta etiqueta (Urgente, Por pagar…): un evento por etiqueta."
+      },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Exactly as in Paperless-ngx, capitals included.",
+            "fr": "Exactement comme dans Paperless-ngx, majuscules comprises.",
+            "de": "Genau wie in Paperless-ngx, mit Großbuchstaben.",
+            "es": "Exactamente como en Paperless-ngx, mayúsculas incluidas."
+          },
+          "placeholder": {
+            "en": "e.g. Urgent",
+            "fr": "ex. Urgent",
+            "de": "z. B. Dringend",
+            "es": "p. ej. Urgente"
+          },
           "required": true
+        },
+        {
+          "key": "correspondent",
+          "type": "string",
+          "label": {
+            "en": "Correspondent",
+            "fr": "Correspondant",
+            "de": "Korrespondent",
+            "es": "Interlocutor"
+          },
+          "description": {
+            "en": "Exactly as in Paperless-ngx, capitals included. Empty: any.",
+            "fr": "Exactement comme dans Paperless-ngx, majuscules comprises. Vide : tous.",
+            "de": "Genau wie in Paperless-ngx, mit Großbuchstaben. Leer: alle.",
+            "es": "Exactamente como en Paperless-ngx, mayúsculas incluidas. Vacío: todos."
+          },
+          "placeholder": {
+            "en": "e.g. EDF",
+            "fr": "ex. EDF",
+            "de": "z. B. Stadtwerke",
+            "es": "p. ej. Iberdrola"
+          }
         }
       ],
-      "outputs": [
+      "variables": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "en": "Title",
+            "fr": "Titre",
+            "de": "Titel",
+            "es": "Título"
+          }
+        },
+        {
+          "key": "correspondent",
+          "type": "string",
+          "label": {
+            "en": "Correspondent",
+            "fr": "Correspondant",
+            "de": "Korrespondent",
+            "es": "Interlocutor"
+          }
+        },
+        {
+          "key": "document_type",
+          "type": "string",
+          "label": {
+            "en": "Document type",
+            "fr": "Type de document",
+            "de": "Dokumenttyp",
+            "es": "Tipo de documento"
+          }
+        },
+        {
+          "key": "tags",
+          "type": "string",
+          "label": {
+            "en": "Tags",
+            "fr": "Étiquettes",
+            "de": "Tags",
+            "es": "Etiquetas"
+          }
+        },
+        {
+          "key": "document_id",
+          "type": "number",
+          "label": {
+            "en": "Document number",
+            "fr": "Numéro du document",
+            "de": "Dokumentnummer",
+            "es": "Número del documento"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Link to the document",
+            "fr": "Lien vers le document",
+            "de": "Link zum Dokument",
+            "es": "Enlace al documento"
+          }
+        }
+      ]
+    },
+    {
+      "key": "processing_failed",
+      "label": {
+        "en": "Document processing failed",
+        "fr": "Échec du traitement d'un document",
+        "de": "Verarbeitung eines Dokuments fehlgeschlagen",
+        "es": "Error al procesar un documento"
+      },
+      "description": {
+        "en": "Paperless-ngx could not process a file (unreadable scan, duplicate…) or a task failed.",
+        "fr": "Paperless-ngx n'a pas pu traiter un fichier (scan illisible, doublon…) ou une tâche a échoué.",
+        "de": "Paperless-ngx konnte eine Datei nicht verarbeiten (unlesbarer Scan, Duplikat…) oder eine Aufgabe ist fehlgeschlagen.",
+        "es": "Paperless-ngx no ha podido procesar un archivo (escaneo ilegible, duplicado…) o una tarea ha fallado."
+      },
+      "variables": [
+        {
+          "key": "file_name",
+          "type": "string",
+          "label": {
+            "en": "File name",
+            "fr": "Nom du fichier",
+            "de": "Dateiname",
+            "es": "Nombre del archivo"
+          }
+        },
+        {
+          "key": "error",
+          "type": "string",
+          "label": {
+            "en": "Error",
+            "fr": "Erreur",
+            "de": "Fehler",
+            "es": "Error"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "inbox",
+      "label": {
+        "en": "Paperless-ngx inbox",
+        "fr": "Courrier à classer",
+        "de": "Paperless-ngx-Posteingang",
+        "es": "Bandeja de Paperless"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Documents waiting in the inbox, the latest titles, scans added today and failures.",
+        "fr": "Documents en attente dans la boîte de réception, derniers titres, scans du jour et échecs.",
+        "de": "Dokumente im Posteingang, die neuesten Titel, heutige Scans und Fehler.",
+        "es": "Documentos pendientes en la bandeja de entrada, últimos títulos, escaneos de hoy y errores."
+      },
+      "icon": "inbox",
+      "settings": [
+        {
+          "key": "count",
+          "type": "select",
+          "label": {
+            "en": "Documents shown",
+            "fr": "Documents affichés",
+            "de": "Angezeigte Dokumente",
+            "es": "Documentos mostrados"
+          },
+          "default": "5",
+          "options": [
+            {
+              "value": "3",
+              "label": {
+                "en": "3",
+                "fr": "3",
+                "de": "3",
+                "es": "3"
+              }
+            },
+            {
+              "value": "5",
+              "label": {
+                "en": "5",
+                "fr": "5",
+                "de": "5",
+                "es": "5"
+              }
+            },
+            {
+              "value": "8",
+              "label": {
+                "en": "8",
+                "fr": "8",
+                "de": "8",
+                "es": "8"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

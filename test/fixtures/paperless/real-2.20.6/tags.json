@@ -1,0 +1,47 @@
+{
+  "request": "/api/tags/?id__in=1,2,3&page_size=3",
+  "headers": {
+    "x-api-version": "9",
+    "x-version": "2.20.6"
+  },
+  "body": {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "all": [1, 2],
+    "results": [
+      {
+        "id": 1,
+        "slug": "inbox",
+        "name": "Inbox",
+        "color": "#a6cee3",
+        "text_color": "#000000",
+        "match": "",
+        "matching_algorithm": 1,
+        "is_insensitive": true,
+        "is_inbox_tag": true,
+        "document_count": 2,
+        "owner": 3,
+        "user_can_change": true,
+        "parent": null,
+        "children": []
+      },
+      {
+        "id": 2,
+        "slug": "urgent",
+        "name": "Urgent",
+        "color": "#a6cee3",
+        "text_color": "#000000",
+        "match": "",
+        "matching_algorithm": 1,
+        "is_insensitive": true,
+        "is_inbox_tag": false,
+        "document_count": 2,
+        "owner": 3,
+        "user_can_change": true,
+        "parent": null,
+        "children": []
+      }
+    ]
+  }
+}

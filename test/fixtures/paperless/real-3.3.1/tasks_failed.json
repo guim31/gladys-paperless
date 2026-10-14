@@ -1,0 +1,47 @@
+{
+  "request": "/api/tasks/?status=failure&acknowledged=false&ordering=-date_created&page_size=25",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+      {
+        "id": 4,
+        "task_id": "4365a8ac-6d55-487f-9c8f-f1c72e957269",
+        "task_type": "consume_file",
+        "task_type_display": "Consume File",
+        "trigger_source": "api_upload",
+        "trigger_source_display": "API Upload",
+        "status": "failure",
+        "status_display": "Failure",
+        "date_created": "2026-10-14T19:23:45.578643Z",
+        "date_started": "2026-10-14T19:24:14.814182Z",
+        "date_done": "2026-10-14T19:24:15.370824Z",
+        "duration_seconds": 0.556642,
+        "wait_time_seconds": 29.235539,
+        "input_data": {
+          "filename": "broken.pdf",
+          "mime_type": "application/pdf",
+          "overrides": {
+            "filename": "broken.pdf",
+            "owner_id": 2,
+            "skip_asn_if_exists": false,
+            "remote_ocr": false
+          }
+        },
+        "result_data": {
+          "error_type": "ConsumerError",
+          "error_message": "broken.pdf: Error occurred while consuming document broken.pdf: InputFileError: ",
+          "traceback": "  File \"/usr/src/paperless/src/documents/consumer.py\", line 239, in _fail\n    raise ConsumerError(...)\n"
+        },
+        "related_document_ids": [],
+        "acknowledged": false,
+        "owner": 2
+      }
+    ]
+  }
+}

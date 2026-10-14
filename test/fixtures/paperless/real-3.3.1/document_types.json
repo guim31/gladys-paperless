@@ -1,0 +1,36 @@
+{
+  "request": "/api/document_types/?id__in=1,2&page_size=2",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+      {
+        "id": 1,
+        "slug": "facture",
+        "name": "Facture",
+        "match": "",
+        "matching_algorithm": 1,
+        "is_insensitive": true,
+        "document_count": 1,
+        "owner": 2,
+        "user_can_change": true
+      },
+      {
+        "id": 2,
+        "slug": "releve",
+        "name": "Relevé",
+        "match": "",
+        "matching_algorithm": 1,
+        "is_insensitive": true,
+        "document_count": 1,
+        "owner": 2,
+        "user_can_change": true
+      }
+    ]
+  }
+}

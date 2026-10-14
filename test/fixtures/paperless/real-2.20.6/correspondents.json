@@ -1,0 +1,26 @@
+{
+  "request": "/api/correspondents/?id__in=1,2&page_size=2",
+  "headers": {
+    "x-api-version": "9",
+    "x-version": "2.20.6"
+  },
+  "body": {
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "all": [1],
+    "results": [
+      {
+        "id": 1,
+        "slug": "edf",
+        "name": "EDF",
+        "match": "",
+        "matching_algorithm": 1,
+        "is_insensitive": true,
+        "document_count": 2,
+        "owner": 3,
+        "user_can_change": true
+      }
+    ]
+  }
+}

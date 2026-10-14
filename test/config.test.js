@@ -1,33 +1,68 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeConfig, DEFAULT_CONFIG } from '../src/config.js';
+import { DEFAULT_CONFIG, normalizeConfig, parseServerUrl } from '../src/config.js';
 
-test('normalizeConfig returns the defaults when called with no argument', () => {
-  assert.deepEqual(normalizeConfig(), DEFAULT_CONFIG);
+test('the address typed or copied from the browser becomes a base URL', () => {
+  const cases = [
+    ['192.0.2.10:8000', 'http://192.0.2.10:8000'],
+    ['  http://192.0.2.10:8000/  ', 'http://192.0.2.10:8000'],
+    ['https://paperless.example/dashboard', 'https://paperless.example'],
+    ['https://paperless.example/documents/12/details', 'https://paperless.example'],
+    ['https://paperless.example/api/', 'https://paperless.example'],
+    ['https://nas.example/paperless/', 'https://nas.example/paperless'],
+    ['https://nas.example/paperless/dashboard', 'https://nas.example/paperless'],
+    ['HTTPS://Paperless.Example:8443', 'https://paperless.example:8443'],
+  ];
+  for (const [typed, expected] of cases) {
+    assert.equal(parseServerUrl(typed), expected, typed);
+  }
 });
 
-test('normalizeConfig keeps user values over the defaults', () => {
-  const config = normalizeConfig({ latitude: 45.5, longitude: -73.6, unit: 'fahrenheit' });
-  assert.equal(config.latitude, 45.5);
-  assert.equal(config.longitude, -73.6);
-  assert.equal(config.unit, 'fahrenheit');
+test('unusable addresses are refused, credentials included', () => {
+  for (const typed of [
+    '',
+    '   ',
+    'ftp://192.0.2.10',
+    'http://',
+    'http://user:pass@192.0.2.10',
+    42,
+  ]) {
+    assert.equal(parseServerUrl(typed), null, String(typed));
+  }
 });
 
-test('normalizeConfig coerces numeric strings coming from a form', () => {
-  const config = normalizeConfig({ latitude: '48.8', longitude: '2.3', poll_frequency: '600' });
-  assert.equal(config.latitude, 48.8);
-  assert.equal(config.longitude, 2.3);
-  assert.equal(config.poll_frequency, 600);
-  assert.equal(typeof config.poll_frequency, 'number');
+test('defaults: nothing configured, one minute, update check on, French', () => {
+  assert.deepEqual(normalizeConfig(), {
+    url: null,
+    invalidUrl: false,
+    token: '',
+    allowSelfSigned: false,
+    pollIntervalMs: 60_000,
+    checkUpdates: true,
+    language: 'fr',
+  });
+  assert.deepEqual(normalizeConfig(DEFAULT_CONFIG), normalizeConfig({}));
 });
 
-test('normalizeConfig falls back to the default for a missing numeric field', () => {
-  const config = normalizeConfig({ unit: 'celsius' });
-  assert.equal(config.poll_frequency, DEFAULT_CONFIG.poll_frequency);
-});
-
-test('GLADYS_PREFER_LOCAL defaults to true and only an explicit false disables it', () => {
-  assert.equal(normalizeConfig().GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: true }).GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: false }).GLADYS_PREFER_LOCAL, false);
+test('normalization of every field', () => {
+  const config = normalizeConfig({
+    url: 'paperless.example:8000',
+    token: '  Token abcdef0123  ',
+    allow_self_signed: 'true',
+    poll_interval: 300,
+    check_updates: false,
+    language: 'de',
+  });
+  assert.deepEqual(config, {
+    url: 'http://paperless.example:8000',
+    invalidUrl: false,
+    token: 'abcdef0123',
+    allowSelfSigned: true,
+    pollIntervalMs: 300_000,
+    checkUpdates: false,
+    language: 'de',
+  });
+  assert.equal(normalizeConfig({ poll_interval: '7' }).pollIntervalMs, 60_000);
+  assert.equal(normalizeConfig({ language: 'it' }).language, 'fr');
+  assert.equal(normalizeConfig({ url: 'ftp://x' }).invalidUrl, true);
 });

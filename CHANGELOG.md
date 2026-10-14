@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-14
+
 ### Added
 
 - A **Paperless-ngx** device, read from the local API with an API token:
@@ -28,4 +30,5 @@ the notes of the version's GitHub Release.
 - English, French, German and Spanish, in the interface and in the
   documentation.
 
-[Unreleased]: https://github.com/guim31/gladys-paperless/commits/main
+[Unreleased]: https://github.com/guim31/gladys-paperless/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-paperless/releases/tag/v1.0.1

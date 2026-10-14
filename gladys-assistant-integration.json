@@ -8,8 +8,8 @@
     "de": "Deine Paperless-ngx-Dokumente in Gladys: Posteingang, neue Scans, Fehler und Szenen.",
     "es": "Sus documentos de Paperless-ngx en Gladys: bandeja de entrada, nuevos escaneos, errores y escenas."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-paperless:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-paperless:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-paperless/main/cover.png",
   "categories": ["services"],

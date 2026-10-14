@@ -1,6 +1,6 @@
 {
   "name": "gladys-paperless",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Paperless-ngx integration for Gladys Assistant: documents, inbox, failed processing, scene triggers on new documents.",
   "type": "module",

@@ -1,0 +1,37 @@
+{
+  "request": "/api/tasks/?status=FAILURE&acknowledged=false",
+  "headers": {
+    "x-api-version": "9",
+    "x-version": "2.20.6"
+  },
+  "body": [
+    {
+      "id": 4,
+      "task_id": "97844015-0830-4abb-bf30-ad8187c47f85",
+      "task_name": "consume_file",
+      "task_file_name": "broken2.pdf",
+      "date_created": "2026-10-14T19:32:24.984785Z",
+      "date_done": "2026-10-14T19:32:28.053350Z",
+      "type": "auto_task",
+      "status": "FAILURE",
+      "result": "broken2.pdf: Error occurred while consuming document broken2.pdf: InputFileError: ",
+      "acknowledged": false,
+      "related_document": null,
+      "owner": 3
+    },
+    {
+      "id": 2,
+      "task_id": "664b24bc-1e69-49f3-bb77-f5ab2d156d1f",
+      "task_name": "consume_file",
+      "task_file_name": "broken.pdf",
+      "date_created": "2026-10-14T19:26:16.570719Z",
+      "date_done": "2026-10-14T19:26:20.511704Z",
+      "type": "auto_task",
+      "status": "FAILURE",
+      "result": "broken.pdf: Error occurred while consuming document broken.pdf: InputFileError: ",
+      "acknowledged": false,
+      "related_document": null,
+      "owner": 3
+    }
+  ]
+}

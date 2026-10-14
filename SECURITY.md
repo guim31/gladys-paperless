@@ -30,6 +30,24 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **Secrets**: the Paperless-ngx API token lives in the Gladys configuration
+  of the integration (a `secret` field). It is sent only to the configured
+  Paperless-ngx address, in the `Authorization` header, and never written to
+  the logs, to `/data` or to a device parameter.
+- **`/data`**: one file, `paperless-state.json`, with the address of the
+  instance, the highest document id seen and the ids of the failed tasks
+  already announced. No token, no document title or content.
+- **Network**: `GET` requests to the configured Paperless-ngx only, over HTTP
+  or HTTPS. Certificates are verified unless the user ticks _Accept
+  self-signed certificates_. Paperless-ngx itself asks GitHub for its latest
+  release when the update check is on; the integration never reaches the
+  internet.
+- **Data sent to Gladys**: counts, the version, and for the scene triggers
+  and the widget the title, correspondent, type and tags of new documents and
+  of the inbox, the file name and first error line of failed tasks.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and Paperless-ngx, which the integration talks to.

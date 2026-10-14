@@ -1,0 +1,43 @@
+{
+  "request": "/api/status/",
+  "headers": {
+    "x-api-version": "9",
+    "x-version": "2.20.6"
+  },
+  "body": {
+    "pngx_version": "2.20.6",
+    "server_os": "Linux-6.6.0-x86_64-with-glibc2.41",
+    "install_type": "docker",
+    "storage": {
+      "total": 270553174016,
+      "available": 25519136768
+    },
+    "database": {
+      "type": "sqlite",
+      "url": "/tmp/p2data/db.sqlite3",
+      "status": "OK",
+      "error": null,
+      "migration_status": {
+        "latest_migration": "paperless_mail.0001_initial_squashed_0009_mailrule_assign_tags",
+        "unapplied_migrations": []
+      }
+    },
+    "tasks": {
+      "redis_url": "redis:///1:6379",
+      "redis_status": "OK",
+      "redis_error": null,
+      "celery_status": "OK",
+      "celery_url": "celery@paperless",
+      "celery_error": null,
+      "index_status": "OK",
+      "index_last_modified": "2026-10-14T19:32:26.938702Z",
+      "index_error": null,
+      "classifier_status": "WARNING",
+      "classifier_last_trained": null,
+      "classifier_error": "No classifier training tasks found",
+      "sanity_check_status": "WARNING",
+      "sanity_check_last_run": null,
+      "sanity_check_error": "No sanity check tasks found"
+    }
+  }
+}

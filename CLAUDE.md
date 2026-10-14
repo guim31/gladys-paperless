@@ -10,17 +10,20 @@ no build step) that runs in its own sandboxed Docker container and talks to
 Gladys through
 [`@gladysassistant/integration-sdk`](https://github.com/GladysAssistant/integration-sdk-js),
 its only runtime dependency. It started from the official JavaScript template.
+It follows a self-hosted [Paperless-ngx](https://docs.paperless-ngx.com), read
+only, through its REST API and an API token.
 
 ## Commands
 
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/hub.test.js              # one file
+node --test --test-name-pattern "inbox"   # tests whose name matches
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
+npm run test:real                         # against a real Paperless-ngx (PAPERLESS_TEST_URL, PAPERLESS_TEST_TOKEN)
 npx github:GladysAssistant/integration-store .   # store admission checks
 ```
 
@@ -31,16 +34,23 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only: registerHandlers(), connect(), shutdown
+src/app.js                        every SDK handler, registered before connect(); the tests use it too
+src/hub.js                        reading timer, states, scene events, connection status, widget data
+src/devices.js                    the Paperless-ngx device: feature keys, names (4 languages), states
+src/widgets.js                    the `inbox` dashboard widget (manifest `widgets`)
+src/texts.js                      connection, error and report texts (4 languages)
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
-gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+src/store.js                      /data/paperless-state.json (newest document, announced failures)
+src/issues.js                     repeated failures logged once
+src/paperless/client.js           read-only REST client (GET), error kinds, both API generations
+src/paperless/model.js            parsers: statistics, status, remote version, documents, tasks
+src/paperless/http.js             node:http/https transport (self-signed certificates on option)
+gladys-assistant-integration.json manifest: name, config_schema, actions, triggers, widget...
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (same sections)
+test/                             node --test, against the SDK's fake Gladys and test/helpers/fakePaperless.js
+test/real/paperless.real.js       optional, against a real Paperless-ngx (npm run test:real)
+test/fixtures/paperless/          real answers (3.3.1, 2.20.6), Home Assistant and pypaperless fixtures
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +80,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in four languages (English, French, German with
+  "du", Spanish with "usted"): action messages, manifest texts, feature names,
+  widget texts, and `docs/en.md`, `fr.md`, `de.md`, `es.md`, kept in sync with
+  the same sections. `test/i18n.test.js` enforces it.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +245,41 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Paperless-ngx : ce que ce dépôt a appris (14/10/2026)
+
+Vérifié sur les images Docker officielles 3.3.1 et 2.20.6 lancées dans la session (Redis local,
+`--network host`). Pour relancer : `dockerd &`, `redis-server --daemonize yes`, puis
+`docker run -d --network host -e PAPERLESS_BIND_ADDR=0.0.0.0 -e PAPERLESS_SECRET_KEY=… -e
+PAPERLESS_REDIS=redis://127.0.0.1:6379 -e PAPERLESS_ADMIN_USER=admin -e PAPERLESS_ADMIN_PASSWORD=…
+paperlessngx/paperless-ngx:latest` (image Docker Hub : `ghcr.io` refuse le téléchargement des
+couches depuis la session). Sans `PAPERLESS_BIND_ADDR=0.0.0.0`, granian tente `::` et meurt
+(« Address family not supported ») ; sans `PAPERLESS_SECRET_KEY`, la 3.x refuse de démarrer.
+
+- **Deux générations d'API**, à lire dans l'en-tête `X-Api-Version` de chaque réponse : 2.x sert
+  la version 9 par défaut, 3.x la version 10 (9 acceptée). En v10, `/api/tasks/` est paginé, les
+  statuts sont en minuscules (`failure`, `started`), les champs s'appellent `task_type`,
+  `input_data.filename`, `result_data.error_message` (+ `traceback`, à ne jamais republier). En
+  v9, liste brute, `FAILURE`, `task_file_name`, `result`. **Un serveur 3.x refuse
+  `status=FAILURE` même en v9 (400)**, un 2.x refuse `status=failure` : le filtre suit la
+  génération. En 2.x le filtre `status` est exact (une valeur par requête).
+- En 2.x, toute liste paginée porte `all` : **les identifiants de tous les résultats**. Sans
+  filtre, `/api/documents/` renvoie donc tous les ids de la bibliothèque : toujours filtrer
+  (`added__gte`, `tags__id__in`) et limiter les champs (`fields=`).
+- `/api/status/` (stockage) est réservé aux administrateurs (403 sinon) et interroge Redis et
+  Celery : lu toutes les 10 min, et le 403 est retenu. Les statistiques, elles, sont lisibles par
+  tout jeton, **limitées aux documents que l'utilisateur voit** : un jeton non administrateur voit
+  0 document si tout appartient à l'admin.
+- `/api/statistics/` : `documents_inbox` et `inbox_tags` valent `null` sans étiquette de boîte de
+  réception. Paperless-ngx pose les étiquettes de boîte de réception sur **chaque** nouveau
+  document : un déclencheur sur l'étiquette « Inbox » part à chaque document.
+- `/api/remote_version/` fait appeler GitHub par Paperless-ngx (cache 15 min chez lui) et répond
+  `0.0.0` en cas d'échec : inconnu, pas « à jour ». Interrupteur `check_updates` dans la config.
+- `/api/` sans barre finale répond 302 ; un portail SSO aussi : redirection = erreur dédiée, la
+  cible est journalisée sans sa query string.
+- `added__gte` accepte un instant ISO en UTC (`…Z`) : « aujourd'hui » se calcule à minuit local
+  du conteneur (le superviseur injecte `TZ`), pas avec `added__date`, qui suit le fuseau du
+  serveur Paperless-ngx (UTC par défaut).
+- Les filtres de déclencheurs n'ont que l'égalité : un document a plusieurs étiquettes mais un
+  événement ne porte qu'une valeur par clé, d'où le déclencheur `document_tagged` émis une fois
+  par étiquette, à côté de `document_added`.

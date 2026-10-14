@@ -1,0 +1,13 @@
+{
+  "request": "/api/tasks/?status=pending&status=started&ordering=-date_created&page_size=1",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "count": 0,
+    "next": null,
+    "previous": null,
+    "results": []
+  }
+}

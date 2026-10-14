@@ -1,0 +1,25 @@
+{
+  "request": "/api/statistics/",
+  "headers": {
+    "x-api-version": "10",
+    "x-version": "3.3.1"
+  },
+  "body": {
+    "documents_total": 3,
+    "documents_inbox": 3,
+    "inbox_tag": 1,
+    "inbox_tags": [1],
+    "document_file_type_counts": [
+      {
+        "mime_type": "application/pdf",
+        "mime_type_count": 3
+      }
+    ],
+    "character_count": 118,
+    "tag_count": 3,
+    "correspondent_count": 2,
+    "document_type_count": 2,
+    "storage_path_count": 0,
+    "current_asn": 0
+  }
+}

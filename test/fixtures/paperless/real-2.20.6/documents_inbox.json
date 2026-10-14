@@ -1,0 +1,33 @@
+{
+  "request": "/api/documents/?tags__id__in=1&ordering=-added&page_size=8&fields=id,title,correspondent,document_type,tags,created,added",
+  "headers": {
+    "x-api-version": "9",
+    "x-version": "2.20.6"
+  },
+  "body": {
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "all": [2, 1],
+    "results": [
+      {
+        "id": 2,
+        "correspondent": 1,
+        "document_type": 1,
+        "title": "Facture EDF novembre",
+        "tags": [1, 2],
+        "created": "2026-10-14",
+        "added": "2026-10-14T19:32:26.858640Z"
+      },
+      {
+        "id": 1,
+        "correspondent": 1,
+        "document_type": 1,
+        "title": "Facture EDF octobre 2026",
+        "tags": [1, 2],
+        "created": "2026-10-14",
+        "added": "2026-10-14T19:26:19.244224Z"
+      }
+    ]
+  }
+}
